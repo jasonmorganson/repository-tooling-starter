@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#MISE description="Run one Turbo task when this repository defines a JavaScript workspace"
+#USAGE arg "<task>" help="Turbo task name"
+set -euo pipefail
+
+if [[ ! -f package.json ]]; then
+  printf 'Skipping turbo %s: no package.json has been added yet.\n' "${usage_task:?}"
+  exit 0
+fi
+
+mise exec -- turbo run "${usage_task:?}"

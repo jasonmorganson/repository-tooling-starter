@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#MISE description="Run exact-range hook checks, then canonical test and build tasks"
+#MISE depends=["check:template"]
+set -euo pipefail
+
+if [[ -n "${CI_BASE_SHA:-}" && "$CI_BASE_SHA" != "0000000000000000000000000000000000000000" && -n "${CI_HEAD_SHA:-}" ]]; then
+  mise exec -- hk check --from-ref "$CI_BASE_SHA" --to-ref "$CI_HEAD_SHA"
+else
+  mise exec -- hk check --all
+fi
+
+mise run test
+mise run build

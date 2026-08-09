@@ -3,6 +3,10 @@
 A copyable full-stack tooling baseline. It is deliberately not a shared runtime
 package: once copied, a repository owns all configuration and upgrades.
 
+The operational interface is implemented as executable native mise file tasks
+under `.config/mise/tasks/`; `.config/mise/config.toml` contains tools and
+environment configuration only.
+
 ## Canonical interface
 
 ```sh
@@ -28,7 +32,8 @@ replaces `app:serve` with its own foreground process.
 ## First adoption
 
 1. Copy this directory into the repository root.
-2. Add runtime pins and package-level tasks in `.config/mise/config.toml`.
+2. Add runtime pins in `.config/mise/config.toml` and application behavior as
+   executable native file tasks under `.config/mise/tasks/`.
 3. Replace `app:serve` with the foreground app command. Add further Pitchfork
    daemons for services; use `depends`, resolved ports, and `fnox exec` rather
    than shell backgrounding.

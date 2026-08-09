@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Start the repository's registered Pitchfork daemon graph"
+set -euo pipefail
+
+mise exec -- pitchfork start app

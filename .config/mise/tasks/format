@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Apply path-aware formatting fixes"
+set -euo pipefail
+
+mise exec -- hk fix

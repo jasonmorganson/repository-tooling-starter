@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Application extension point used by the default Pitchfork daemon"
+echo "Configure app:serve for this repository before running mise run start." >&2
+exit 1

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#MISE description="Run the Turbo lint pipeline when this repository defines one"
+set -euo pipefail
+
+mise run turbo:run lint

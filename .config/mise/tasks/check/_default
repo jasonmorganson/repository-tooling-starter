@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#MISE description="Validate tooling configuration and run path-aware checks"
+#MISE depends=["check:template"]
+set -euo pipefail
+
+mise exec -- hk check --all
+mise run turbo:run check
