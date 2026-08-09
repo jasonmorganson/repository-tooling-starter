@@ -39,6 +39,7 @@ if (open --raw .config/mise/config.toml | lines | any {|line| $line =~ '^\[tasks
   error make { msg: "Define starter behavior in native mise file tasks, not inline TOML tasks." }
 }
 
+require-content .config/mise/config.toml 'task.run_auto_install = true'
 require-content .config/hk.pkl 'default_branch = "origin/main"'
 require-content .config/hk.pkl 'mise run check:template'
 require-content .config/fnox/local.toml 'type = "plain"'

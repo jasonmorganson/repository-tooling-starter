@@ -35,8 +35,9 @@ replaces `app:serve` with its own foreground process.
 2. Add application runtime pins in `.config/mise/config.toml` and application
    behavior as executable native file tasks under `.config/mise/tasks/`. The
    starter's control-plane tasks use Nushell; each declares it in local MISE
-   metadata. Choose another task runtime only where the repository-specific
-   task benefits from it, using [the task runtime decision guide](docs/task-runtime-options.md).
+   metadata and mise installs that task-local runtime automatically. Choose
+   another task runtime only where the repository-specific task benefits from
+   it, using [the task runtime decision guide](docs/task-runtime-options.md).
 3. Replace `app:serve` with the foreground app command. Add further Pitchfork
    daemons for services; use `depends`, resolved ports, and `fnox exec` rather
    than shell backgrounding.
