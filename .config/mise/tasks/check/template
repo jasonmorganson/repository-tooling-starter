@@ -2,7 +2,7 @@
 #MISE description="Validate the reusable tooling starter contract"
 set -euo pipefail
 
-for file in mise.toml .config/mise/config.toml .config/fnox/local.toml .config/hk.pkl .config/pitchfork.toml .config/wt.toml turbo.json .github/workflows/ci.yml; do
+for file in mise.toml .config/mise/config.toml .config/fnox/local.toml .config/hk.pkl .config/pitchfork.toml .config/wt.toml turbo.json .github/workflows/ci.yml docs/task-runtime-options.md; do
   [[ -f "$file" ]] || { echo "Missing required template file: $file" >&2; exit 1; }
 done
 

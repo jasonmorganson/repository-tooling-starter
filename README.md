@@ -34,6 +34,8 @@ replaces `app:serve` with its own foreground process.
 1. Copy this directory into the repository root.
 2. Add runtime pins in `.config/mise/config.toml` and application behavior as
    executable native file tasks under `.config/mise/tasks/`.
+   Choose a task runtime per task (rather than adopting one template-wide
+   language) using [the task runtime decision guide](docs/task-runtime-options.md).
 3. Replace `app:serve` with the foreground app command. Add further Pitchfork
    daemons for services; use `depends`, resolved ports, and `fnox exec` rather
    than shell backgrounding.
@@ -53,6 +55,8 @@ replaces `app:serve` with its own foreground process.
 
 - Mise owns every executable invoked by hooks and CI; reusable validation and
   orchestration live in mise tasks, not helper scripts.
+- Each task declares the runtime it needs in local MISE metadata and imports
+  repository-owned modules. The starter does not mandate a task language.
 - fnox configuration contains declarations only; values arrive through the
   environment in local development and CI.
 - Pitchfork, not ad hoc shell jobs, owns daemon lifetime and port allocation.
