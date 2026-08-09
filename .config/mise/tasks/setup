@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Install repository tooling and validate the starter contract"
 #MISE depends=["check:template"]
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-mise install
+^mise install

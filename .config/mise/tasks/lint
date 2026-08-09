@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Run the Turbo lint pipeline when this repository defines one"
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-mise run turbo:run lint
+^mise run turbo:run lint

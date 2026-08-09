@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Apply path-aware formatting fixes"
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-mise exec -- hk fix
+^mise exec -- hk fix

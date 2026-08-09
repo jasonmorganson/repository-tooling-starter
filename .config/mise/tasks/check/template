@@ -1,37 +1,68 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Validate the reusable tooling starter contract"
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-for file in mise.toml .config/mise/config.toml .config/fnox/local.toml .config/hk.pkl .config/pitchfork.toml .config/wt.toml turbo.json .github/workflows/ci.yml docs/task-runtime-options.md; do
-  [[ -f "$file" ]] || { echo "Missing required template file: $file" >&2; exit 1; }
-done
-
-for task in setup start stop format lint test build ci; do
-  [[ -x ".config/mise/tasks/$task" ]] || { echo "Missing executable canonical mise task: $task" >&2; exit 1; }
-done
-
-for task in check/_default app/serve turbo/run check/template; do
-  [[ -x ".config/mise/tasks/$task" ]] || { echo "Missing executable extension mise task: $task" >&2; exit 1; }
-done
-
-! grep -Eq '^\[tasks(\.|\])' .config/mise/config.toml || {
-  echo "Define starter behavior in native mise file tasks, not inline TOML tasks." >&2
-  exit 1
+def require-file [file: string] {
+  if not ($file | path exists) {
+    error make { msg: $"Missing required template file: ($file)" }
+  }
 }
 
-grep -Fq 'default_branch = "origin/main"' .config/hk.pkl
-grep -Fq 'mise run check:template' .config/hk.pkl
-grep -Fq 'type = "plain"' .config/fnox/local.toml
-grep -Fq 'fnox -c .config/fnox/local.toml' .config/pitchfork.toml
-grep -Fq 'port-base=' .config/wt.toml
-grep -Fq 'hash_port' .config/wt.toml
-grep -Fq '"cache": false, "persistent": true' turbo.json
-grep -Fq 'CI_BASE_SHA' .github/workflows/ci.yml
-grep -Fq -- '--from-ref' .config/mise/tasks/ci
+def require-executable [task: string] {
+  let file = $".config/mise/tasks/($task)"
+  require-file $file
+  let mode = (ls -l $file | get mode | first)
+  if not ($mode | str starts-with "rwx") {
+    error make { msg: $"Missing executable mise task: ($file)" }
+  }
+}
 
-if grep -En '^\s*[A-Z][A-Z0-9_]*\s*=\s*"[^"].*"\s*$' .config/fnox/*.toml | grep -Ev 'provider\s*=|description\s*='; then
-  echo "fnox config must declare secret sources, not secret values." >&2
-  exit 1
-fi
+def require-content [file: string, content: string] {
+  if not ((open --raw $file) | str contains $content) {
+    error make { msg: $"Expected ($file) to contain: ($content)" }
+  }
+}
 
-echo "Repository tooling starter contract is valid."
+for file in [mise.toml .config/mise/config.toml .config/fnox/local.toml .config/hk.pkl .config/pitchfork.toml .config/wt.toml turbo.json .github/workflows/ci.yml docs/task-runtime-options.md] {
+  require-file $file
+}
+
+for task in [setup start stop format lint test build ci] {
+  require-executable $task
+}
+
+for task in [check/_default app/serve turbo/run check/template] {
+  require-executable $task
+}
+
+if (open --raw .config/mise/config.toml | lines | any {|line| $line =~ '^\[tasks(\.|\])' }) {
+  error make { msg: "Define starter behavior in native mise file tasks, not inline TOML tasks." }
+}
+
+require-content .config/hk.pkl 'default_branch = "origin/main"'
+require-content .config/hk.pkl 'mise run check:template'
+require-content .config/fnox/local.toml 'type = "plain"'
+require-content .config/pitchfork.toml 'fnox -c .config/fnox/local.toml'
+require-content .config/wt.toml 'port-base='
+require-content .config/wt.toml 'hash_port'
+require-content turbo.json '"cache": false, "persistent": true'
+require-content .github/workflows/ci.yml 'CI_BASE_SHA'
+require-content .config/mise/tasks/ci '--from-ref'
+
+let secret_values = (
+  glob .config/fnox/*.toml
+  | each {|file|
+      open --raw $file
+      | lines
+      | where {|line| $line =~ '^\s*[A-Z][A-Z0-9_]*\s*=\s*"[^"]+"\s*$' }
+      | where {|line| not ($line =~ 'provider\s*=|description\s*=') }
+    }
+  | flatten
+)
+
+if not ($secret_values | is-empty) {
+  $secret_values | each {|line| print -e $line }
+  error make { msg: "fnox config must declare secret sources, not secret values." }
+}
+
+print "Repository tooling starter contract is valid."

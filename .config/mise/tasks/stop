@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Stop the repository's registered Pitchfork daemon graph"
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-mise exec -- pitchfork stop app
+^mise exec -- pitchfork stop app

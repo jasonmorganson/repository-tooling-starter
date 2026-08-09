@@ -1,11 +1,16 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Run one Turbo task when this repository defines a JavaScript workspace"
-#USAGE arg "<task>" help="Turbo task name"
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-if [[ ! -f package.json ]]; then
-  printf 'Skipping turbo %s: no package.json has been added yet.\n' "${usage_task:?}"
-  exit 0
-fi
+def main [task: string] {
+  if ($task | is-empty) {
+    error make { msg: "A Turbo task name is required." }
+  }
 
-mise exec -- turbo run "${usage_task:?}"
+  if not ("package.json" | path exists) {
+    print $"Skipping turbo ($task): no package.json has been added yet."
+    return
+  }
+
+  ^mise exec -- turbo run $task
+}

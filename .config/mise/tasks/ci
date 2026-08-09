@@ -1,13 +1,16 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Run exact-range hook checks, then canonical test and build tasks"
 #MISE depends=["check:template"]
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-if [[ -n "${CI_BASE_SHA:-}" && "$CI_BASE_SHA" != "0000000000000000000000000000000000000000" && -n "${CI_HEAD_SHA:-}" ]]; then
-  mise exec -- hk check --from-ref "$CI_BASE_SHA" --to-ref "$CI_HEAD_SHA"
-else
-  mise exec -- hk check --all
-fi
+let base_sha = ($env.CI_BASE_SHA? | default "")
+let head_sha = ($env.CI_HEAD_SHA? | default "")
 
-mise run test
-mise run build
+if (($base_sha | is-not-empty) and $base_sha != "0000000000000000000000000000000000000000" and ($head_sha | is-not-empty)) {
+  ^mise exec -- hk check --from-ref $base_sha --to-ref $head_sha
+} else {
+  ^mise exec -- hk check --all
+}
+
+^mise run test
+^mise run build

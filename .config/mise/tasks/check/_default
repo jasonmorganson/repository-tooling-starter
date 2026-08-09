@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 #MISE description="Validate tooling configuration and run path-aware checks"
 #MISE depends=["check:template"]
-set -euo pipefail
+#MISE tools."aqua:nushell/nushell"="latest"
 
-mise exec -- hk check --all
-mise run turbo:run check
+^mise exec -- hk check --all
+^mise run turbo:run check
