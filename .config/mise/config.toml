@@ -51,8 +51,8 @@ run = "mise run turbo:run build"
 description = "Run exact-range hook checks, then canonical test and build tasks"
 depends = ["check:template"]
 run = """
-if [ -n "${CI_BASE_SHA:-}" ] && [ -n "${CI_HEAD_SHA:-}" ]; then
-  mise exec -- hk check --from "$CI_BASE_SHA" --to "$CI_HEAD_SHA"
+if [ -n "${CI_BASE_SHA:-}" ] && [ "$CI_BASE_SHA" != "0000000000000000000000000000000000000000" ] && [ -n "${CI_HEAD_SHA:-}" ]; then
+  mise exec -- hk check --from-ref "$CI_BASE_SHA" --to-ref "$CI_HEAD_SHA"
 else
   mise exec -- hk check --all
 fi
@@ -91,6 +91,7 @@ grep -Fq 'port-base=' .config/wt.toml
 grep -Fq 'hash_port' .config/wt.toml
 grep -Fq '"cache": false, "persistent": true' turbo.json
 grep -Fq 'CI_BASE_SHA' .github/workflows/ci.yml
+grep -Fq -- '--from-ref' .config/mise/config.toml
 [ ! -d scripts ] || { echo "Use mise tasks instead of a scripts directory." >&2; exit 1; }
 if grep -En '^\\s*[A-Z][A-Z0-9_]*\\s*=\\s*"[^"].*"\\s*$' .config/fnox/*.toml | grep -Ev 'provider\\s*=|description\\s*='; then
   echo "fnox config must declare secret sources, not secret values." >&2
