@@ -1,5 +1,5 @@
 #!/usr/bin/env nu
 #MISE description="Run the Turbo build pipeline when this repository defines one"
-#MISE tools."aqua:nushell/nushell"="latest"
+#MISE tools={"aqua:nushell/nushell"="latest"}
 
 ^mise run turbo:run build

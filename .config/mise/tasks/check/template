@@ -1,6 +1,6 @@
 #!/usr/bin/env nu
 #MISE description="Validate the reusable tooling starter contract"
-#MISE tools."aqua:nushell/nushell"="latest"
+#MISE tools={"aqua:nushell/nushell"="latest"}
 
 def require-file [file: string] {
   if not ($file | path exists) {

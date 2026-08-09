@@ -1,7 +1,7 @@
 #!/usr/bin/env nu
 #MISE description="Run exact-range hook checks, then canonical test and build tasks"
 #MISE depends=["check:template"]
-#MISE tools."aqua:nushell/nushell"="latest"
+#MISE tools={"aqua:nushell/nushell"="latest"}
 
 let base_sha = ($env.CI_BASE_SHA? | default "")
 let head_sha = ($env.CI_HEAD_SHA? | default "")

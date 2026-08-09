@@ -17,8 +17,6 @@ jobs:
         with:
           fetch-depth: 0
       - uses: jdx/mise-action@v2
-      - name: Install native task runtime
-        run: mise exec aqua:nushell/nushell@latest -- nu --version
       - name: Run canonical CI
         env:
           CI_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}

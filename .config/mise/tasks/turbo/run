@@ -1,6 +1,6 @@
 #!/usr/bin/env nu
 #MISE description="Run one Turbo task when this repository defines a JavaScript workspace"
-#MISE tools."aqua:nushell/nushell"="latest"
+#MISE tools={"aqua:nushell/nushell"="latest"}
 
 def main [task: string] {
   if ($task | is-empty) {

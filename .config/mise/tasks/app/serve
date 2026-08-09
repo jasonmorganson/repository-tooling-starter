@@ -1,5 +1,5 @@
 #!/usr/bin/env nu
 #MISE description="Application extension point used by the default Pitchfork daemon"
-#MISE tools."aqua:nushell/nushell"="latest"
+#MISE tools={"aqua:nushell/nushell"="latest"}
 
 error make { msg: "Configure app:serve for this repository before running mise run start." }
