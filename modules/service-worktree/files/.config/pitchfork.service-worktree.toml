@@ -1,0 +1,13 @@
+[settings.general]
+mise = true
+
+[daemons.__SERVICE_NAME__]
+run = "fnox -c .config/fnox/local.toml exec -- mise run __SERVICE_TASK__"
+port = { expect = [__PORT__], bump = 100 }
+ready_delay = 5
+
+[daemons.__DEPENDENT_SERVICE__]
+depends = ["__SERVICE_NAME__"]
+run = "fnox -c .config/fnox/local.toml exec -- env __SERVICE_URL__=http://127.0.0.1:{{ daemons.__SERVICE_NAME__.port }} mise run __DEPENDENT_TASK__"
+port = { expect = [__DEPENDENT_PORT__], bump = 100 }
+ready_delay = 5

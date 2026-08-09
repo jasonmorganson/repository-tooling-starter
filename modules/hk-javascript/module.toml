@@ -1,0 +1,6 @@
+[module]
+name = "hk-javascript"
+copy_mode = "copy"
+required_inputs = ["source globs", "format/lint/typecheck tasks", "unit and integration test tasks"]
+conflicts = []
+validation = ["mise run check", "mise exec -- hk check --all"]

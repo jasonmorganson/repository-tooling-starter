@@ -1,0 +1,6 @@
+[module]
+name = "dependency-updates/dependabot"
+copy_mode = "copy"
+required_inputs = ["package ecosystems", "workspace directories", "update schedule"]
+conflicts = ["dependency-updates/renovate"]
+validation = ["GitHub Dependabot configuration validation"]

@@ -1,0 +1,10 @@
+[[pre-start]]
+trust = "mise trust --quiet"
+[[pre-start]]
+setup = "mise run setup"
+[[pre-start]]
+ports = "wt config state vars set port-base={{ branch | hash_port }}"
+[post-start]
+start = "mise run start"
+[pre-remove]
+stop = "mise run stop"

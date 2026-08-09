@@ -1,0 +1,2 @@
+[tasks.invalid]
+run = "echo invalid"

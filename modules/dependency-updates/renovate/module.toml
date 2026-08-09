@@ -1,0 +1,6 @@
+[module]
+name = "dependency-updates/renovate"
+copy_mode = "copy"
+required_inputs = ["timezone", "update schedule", "repository-specific exclusions"]
+conflicts = ["dependency-updates/dependabot"]
+validation = ["Renovate configuration validation"]

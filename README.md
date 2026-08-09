@@ -77,3 +77,9 @@ multi-service, Worktrunk, and Turbo-monorepo stress case.
 
 See [the pilot migration map](docs/PILOTS.md) for the preserved configuration
 and required proof for each repository.
+
+## Optional configuration modules
+
+Use the copy-only bundles in [modules/](modules/README.md) when a repository
+needs a JavaScript hk profile, Turbo monorepo contract, service/worktree
+lifecycle, hardened quality workflow, or dependency-update policy.

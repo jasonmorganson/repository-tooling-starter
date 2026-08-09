@@ -1,0 +1,7 @@
+[module]
+name = "turbo-monorepo"
+copy_mode = "copy"
+required_inputs = ["workspace package manager", "task outputs", "artifact environment variables", "pass-through environment variables"]
+conflicts = []
+validation = ["mise run check", "mise run test", "mise run build"]
+cache_env_review = true

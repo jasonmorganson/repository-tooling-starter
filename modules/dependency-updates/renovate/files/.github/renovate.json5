@@ -1,0 +1,23 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:recommended", ":semanticCommits"],
+  timezone: "America/New_York",
+  schedule: ["at 3:00pm on Friday"],
+  labels: ["dependencies"],
+  rangeStrategy: "bump",
+  separateMajorMinor: true,
+  automerge: false,
+  rebaseWhen: "behind-base-branch",
+  packageRules: [
+    { matchUpdateTypes: ["major"], groupName: "major dependencies" },
+    { matchDepTypes: ["dependencies"], matchUpdateTypes: ["minor", "patch"], groupName: "production dependencies" },
+    { matchDepTypes: ["devDependencies"], matchUpdateTypes: ["minor", "patch"], groupName: "development dependencies" },
+    { matchPackageNames: ["@types/{/,}**"], automerge: true, semanticCommitType: "chore", semanticCommitScope: "types" }
+  ],
+  vulnerabilityAlerts: { enabled: true, labels: ["security"], automerge: true },
+  lockFileMaintenance: { enabled: true, schedule: ["at 6:00am"] },
+  customManagers: [
+    { customType: "regex", managerFilePatterns: ["/\\.github\\/(workflows|actions)\\/.*\\.ya?ml$/"], matchStrings: ["uses: (?<depName>[^/]+/[^/]+)@(?<currentValue>.*?)\\s"], datasourceTemplate: "github-tags", versioningTemplate: "semver" },
+    { customType: "regex", managerFilePatterns: ["/\\.github\\/(workflows|actions)\\/.*\\.ya?ml$/"], matchStrings: ["image: (?<depName>.*?):(?<currentValue>.*?)\\s"], datasourceTemplate: "docker", versioningTemplate: "semver" }
+  ]
+}

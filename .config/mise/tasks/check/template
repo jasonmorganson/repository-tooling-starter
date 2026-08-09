@@ -31,7 +31,7 @@ for task in [setup start stop format lint test build ci] {
   require-executable $task
 }
 
-for task in [check/_default app/serve turbo/run check/template] {
+for task in [check/_default app/serve turbo/run check/template module/check] {
   require-executable $task
 }
 
@@ -64,5 +64,7 @@ if not ($secret_values | is-empty) {
   $secret_values | each {|line| print -e $line }
   error make { msg: "fnox config must declare secret sources, not secret values." }
 }
+
+^mise run module:check
 
 print "Repository tooling starter contract is valid."

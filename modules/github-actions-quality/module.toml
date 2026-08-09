@@ -1,0 +1,6 @@
+[module]
+name = "github-actions-quality"
+copy_mode = "copy"
+required_inputs = ["default branch", "required status context", "repository-specific CI secrets"]
+conflicts = []
+validation = ["mise run ci", "GitHub Actions pull request run"]

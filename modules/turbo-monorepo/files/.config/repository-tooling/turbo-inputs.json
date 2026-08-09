@@ -1,0 +1,5 @@
+{
+  "artifactEnv": [],
+  "passThroughEnv": [],
+  "globalDependencies": ["**/.env.*local", ".config/mise/config.toml"]
+}
