@@ -42,11 +42,12 @@ replaces `app:serve` with its own foreground process.
 5. If the repository needs databases or other stateful services, add a named
    Worktrunk extension. Do not put destructive create/drop steps in the base
    lifecycle.
-6. Run `bash scripts/check-template.sh`, `mise run setup`, and `mise run check`.
+6. Run `mise run check:template`, `mise run setup`, and `mise run check`.
 
 ## Design rules
 
-- Mise owns every executable invoked by hooks, scripts, and CI.
+- Mise owns every executable invoked by hooks and CI; reusable validation and
+  orchestration live in mise tasks, not helper scripts.
 - fnox configuration contains declarations only; values arrive through the
   environment in local development and CI.
 - Pitchfork, not ad hoc shell jobs, owns daemon lifetime and port allocation.

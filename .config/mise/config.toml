@@ -15,7 +15,8 @@ REPOSITORY_FNOX_CONFIG = ".config/fnox/local.toml"
 
 [tasks.setup]
 description = "Install repository tooling and validate the starter contract"
-run = "mise install && bash scripts/check-template.sh"
+depends = ["check:template"]
+run = "mise install"
 
 [tasks.start]
 description = "Start the repository's registered Pitchfork daemon graph"
@@ -31,23 +32,72 @@ run = "mise exec -- hk fix"
 
 [tasks.lint]
 description = "Run the Turbo lint pipeline when this repository defines one"
-run = "bash scripts/run-turbo-task.sh lint"
+run = "mise run turbo:run lint"
 
 [tasks.check]
 description = "Validate tooling configuration and run path-aware checks"
-run = "bash scripts/check-template.sh && mise exec -- hk check --all && bash scripts/run-turbo-task.sh check"
+depends = ["check:template"]
+run = "mise exec -- hk check --all && mise run turbo:run check"
 
 [tasks.test]
 description = "Run the Turbo test pipeline when this repository defines one"
-run = "bash scripts/run-turbo-task.sh test"
+run = "mise run turbo:run test"
 
 [tasks.build]
 description = "Run the Turbo build pipeline when this repository defines one"
-run = "bash scripts/run-turbo-task.sh build"
+run = "mise run turbo:run build"
 
 [tasks.ci]
 description = "Run exact-range hook checks, then canonical test and build tasks"
-run = "bash scripts/run-ci.sh"
+depends = ["check:template"]
+run = """
+if [ -n "${CI_BASE_SHA:-}" ] && [ -n "${CI_HEAD_SHA:-}" ]; then
+  mise exec -- hk check --from "$CI_BASE_SHA" --to "$CI_HEAD_SHA"
+else
+  mise exec -- hk check --all
+fi
+mise run test
+mise run build
+"""
+
+[tasks."turbo:run"]
+description = "Run one Turbo task when this repository defines a JavaScript workspace"
+usage = 'arg "<task>" help="Turbo task name"'
+run = """
+if [ ! -f package.json ]; then
+  printf 'Skipping turbo %s: no package.json has been added yet.\\n' "$usage_task"
+  exit 0
+fi
+mise exec -- turbo run "$usage_task"
+"""
+
+[tasks."check:template"]
+description = "Validate the reusable tooling starter contract"
+run = """
+set -eu
+for file in mise.toml .config/mise/config.toml .config/fnox/local.toml .config/hk.pkl .config/pitchfork.toml .config/wt.toml turbo.json .github/workflows/ci.yml; do
+  [ -f "$file" ] || { echo "Missing required template file: $file" >&2; exit 1; }
+done
+for task in setup start stop check test lint format build ci; do
+  grep -Fq "[tasks.$task]" .config/mise/config.toml || { echo "Missing canonical mise task: $task" >&2; exit 1; }
+done
+grep -Fq '[tasks."turbo:run"]' .config/mise/config.toml
+grep -Fq '[tasks."check:template"]' .config/mise/config.toml
+grep -Fq 'default_branch = "origin/main"' .config/hk.pkl
+grep -Fq 'mise exec -- hk' .config/mise/config.toml
+grep -Fq 'type = "plain"' .config/fnox/local.toml
+grep -Fq 'fnox -c .config/fnox/local.toml' .config/pitchfork.toml
+grep -Fq 'port-base=' .config/wt.toml
+grep -Fq 'hash_port' .config/wt.toml
+grep -Fq '"cache": false, "persistent": true' turbo.json
+grep -Fq 'CI_BASE_SHA' .github/workflows/ci.yml
+[ ! -d scripts ] || { echo "Use mise tasks instead of a scripts directory." >&2; exit 1; }
+if grep -En '^\\s*[A-Z][A-Z0-9_]*\\s*=\\s*"[^"].*"\\s*$' .config/fnox/*.toml | grep -Ev 'provider\\s*=|description\\s*='; then
+  echo "fnox config must declare secret sources, not secret values." >&2
+  exit 1
+fi
+echo "Repository tooling starter contract is valid."
+"""
 
 [tasks."app:serve"]
 description = "Application extension point used by the default Pitchfork daemon"

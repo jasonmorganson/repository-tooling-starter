@@ -4,12 +4,12 @@ amends "package://github.com/jdx/hk/releases/download/v1.52.0/hk@1.52.0#/Config.
 
 default_branch = "origin/main"
 
-local toolingFiles = "{mise.toml,turbo.json,.config/{mise,fnox,hk.pkl,pitchfork.toml,wt.toml}/**/*,.github/workflows/**/*,scripts/**/*}"
+local toolingFiles = "{mise.toml,turbo.json,README.md,docs/**/*,.config/{mise,fnox,hk.pkl,pitchfork.toml,wt.toml}/**/*,.github/workflows/**/*}"
 
 local toolingChecks = new Mapping<String, Step> {
   ["check:tooling-contract"] = new Step {
     glob = toolingFiles
-    check = "bash scripts/check-template.sh"
+    check = "mise run check:template"
   }
 }
 hooks {
