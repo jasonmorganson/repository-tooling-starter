@@ -2,7 +2,6 @@
 experimental = true
 quiet = true
 locked = false
-task.run_auto_install = true
 
 [tools]
 fnox = "latest"
