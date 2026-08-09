@@ -1,0 +1,3 @@
+# Root sentinel for mise monorepo task discovery. Repository tooling lives in
+# .config/mise/config.toml so application runtimes can be added independently.
+monorepo_root = true

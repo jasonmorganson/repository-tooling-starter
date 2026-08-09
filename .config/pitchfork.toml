@@ -1,0 +1,11 @@
+#:schema https://pitchfork.jdx.dev/schema.json
+
+[settings.general]
+mise = true
+
+# Replace app:serve with the repository's foreground application command. Keep
+# long-running processes here: mise tasks orchestrate, Pitchfork supervises.
+[daemons.app]
+run = "fnox -c .config/fnox/local.toml --no-defaults exec -- mise run app:serve"
+port = { expect = [3000], bump = 99 }
+ready_delay = 2

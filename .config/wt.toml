@@ -1,0 +1,13 @@
+# Worktrunk owns worktree lifecycle. Application-specific database setup belongs
+# in an explicit repository extension, never in this non-destructive baseline.
+[[pre-start]]
+trust = "mise trust --quiet"
+
+[[pre-start]]
+ports = "wt config state vars set port-base={{ branch | hash_port }}"
+
+[post-start]
+start = "mise run start"
+
+[pre-remove]
+stop = "mise run stop"

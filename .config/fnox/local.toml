@@ -1,0 +1,10 @@
+#:schema https://fnox.jdx.dev/schema.json
+#
+# Declare application secret names below. Values are deliberately never stored
+# here; both local development and CI receive them from the environment.
+if_missing = "error"
+
+[providers.environment]
+type = "plain"
+
+[secrets]

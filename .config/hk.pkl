@@ -1,0 +1,28 @@
+// Keep this compatibility import pinned even though the executable is managed
+// as latest by mise: Pkl package imports require an immutable release URL.
+amends "package://github.com/jdx/hk/releases/download/v1.52.0/hk@1.52.0#/Config.pkl"
+
+default_branch = "origin/main"
+
+local toolingFiles = "{mise.toml,turbo.json,.config/{mise,fnox,hk.pkl,pitchfork.toml,wt.toml}/**/*,.github/workflows/**/*,scripts/**/*}"
+
+local toolingChecks = new Mapping<String, Step> {
+  ["check:tooling-contract"] = new Step {
+    glob = toolingFiles
+    check = "bash scripts/check-template.sh"
+  }
+}
+hooks {
+  ["fix"] {
+    steps { ...toolingChecks }
+  }
+  ["pre-commit"] {
+    steps { ...toolingChecks }
+  }
+  ["check"] {
+    steps { ...toolingChecks }
+  }
+  ["pre-push"] {
+    steps { ...toolingChecks }
+  }
+}

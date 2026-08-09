@@ -1,0 +1,54 @@
+[settings]
+experimental = true
+quiet = true
+locked = false
+
+[tools]
+fnox = "latest"
+hk = "latest"
+pitchfork = "latest"
+"github:max-sixty/worktrunk" = "latest"
+"npm:turbo" = "latest"
+
+[env]
+REPOSITORY_FNOX_CONFIG = ".config/fnox/local.toml"
+
+[tasks.setup]
+description = "Install repository tooling and validate the starter contract"
+run = "mise install && bash scripts/check-template.sh"
+
+[tasks.start]
+description = "Start the repository's registered Pitchfork daemon graph"
+run = "mise exec -- pitchfork start app"
+
+[tasks.stop]
+description = "Stop the repository's registered Pitchfork daemon graph"
+run = "mise exec -- pitchfork stop app"
+
+[tasks.format]
+description = "Apply path-aware formatting fixes"
+run = "mise exec -- hk fix"
+
+[tasks.lint]
+description = "Run the Turbo lint pipeline when this repository defines one"
+run = "bash scripts/run-turbo-task.sh lint"
+
+[tasks.check]
+description = "Validate tooling configuration and run path-aware checks"
+run = "bash scripts/check-template.sh && mise exec -- hk check --all && bash scripts/run-turbo-task.sh check"
+
+[tasks.test]
+description = "Run the Turbo test pipeline when this repository defines one"
+run = "bash scripts/run-turbo-task.sh test"
+
+[tasks.build]
+description = "Run the Turbo build pipeline when this repository defines one"
+run = "bash scripts/run-turbo-task.sh build"
+
+[tasks.ci]
+description = "Run exact-range hook checks, then canonical test and build tasks"
+run = "bash scripts/run-ci.sh"
+
+[tasks."app:serve"]
+description = "Application extension point used by the default Pitchfork daemon"
+run = "echo 'Configure app:serve for this repository before running mise run start.' >&2; exit 1"
