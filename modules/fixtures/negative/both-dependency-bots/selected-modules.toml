@@ -1,2 +1,0 @@
-[modules]
-selected = ["dependency-updates/dependabot", "dependency-updates/renovate"]

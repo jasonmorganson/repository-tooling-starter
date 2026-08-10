@@ -1,6 +1,0 @@
-[module]
-name = "service-worktree"
-copy_mode = "copy"
-required_inputs = ["daemon names", "foreground commands", "ports", "ready checks", "secret declarations"]
-conflicts = []
-validation = ["mise run start", "mise run stop", "wt switch <branch>"]

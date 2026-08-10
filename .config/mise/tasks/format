@@ -1,5 +1,0 @@
-#!/usr/bin/env nu
-#MISE description="Apply path-aware formatting fixes"
-#MISE tools={"aqua:nushell/nushell"="latest"}
-
-^mise exec -- hk fix

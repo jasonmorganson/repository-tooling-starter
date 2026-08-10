@@ -1,11 +1,9 @@
 # Repository Tooling Starter
 
-A copyable full-stack tooling baseline. It is deliberately not a shared runtime
-package: once copied, a repository owns all configuration and upgrades.
-
-The operational interface is implemented as executable native mise file tasks
-under `.config/mise/tasks/`; `.config/mise/config.toml` contains tools and
-environment configuration only.
+A minimal example that consumes the shared
+[repository-tooling](https://github.com/jasonmorganson/repository-tooling)
+Nushell task library through mise remote tasks. It keeps the configuration
+baseline and application extensions local while tracking the shared task set.
 
 ## Canonical interface
 
@@ -21,43 +19,43 @@ mise run build
 mise run ci
 ```
 
-`setup` installs the latest configured tooling and checks the template shape. The
-repository configuration disables locked mode so a machine-level setting cannot
-prevent the explicitly requested latest-version policy. `check` runs
-the path-aware hk contract and an optional Turbo check pipeline. `test`, `lint`,
-and `build` defer to Turbo only after the adopter adds a root `package.json` and
-package-level scripts. `start` is intentionally blocked until the repository
-replaces `app:serve` with its own foreground process.
+The root `mise.toml` includes the shared tasks from `main` first, then all
+standard local task directories. A local task with the same name therefore wins
+over the shared default. `start` is intentionally blocked until the repository
+replaces local `app:serve` with its own foreground process.
 
 ## First adoption
 
 1. Copy this directory into the repository root.
-2. Add application runtime pins in `.config/mise/config.toml` and application
-   behavior as executable native file tasks under `.config/mise/tasks/`. The
-   starter's control-plane tasks use Nushell; each declares it in local MISE
-   metadata. Choose another task runtime only where the repository-specific
-   task benefits from it, using [the task runtime decision guide](docs/task-runtime-options.md).
-3. Replace `app:serve` with the foreground app command. Add further Pitchfork
+2. Keep the remote include on `main`, or replace `main` with a release tag or
+   full commit SHA when the repository needs pinned shared-task behavior.
+3. Add application runtime pins in `.config/mise/config.toml` and local
+   overrides under `.config/mise/tasks/`. A local file may replace any shared
+   task while retaining the rest of the shared task library.
+4. Replace `app:serve` with the foreground app command. Add further Pitchfork
    daemons for services; use `depends`, resolved ports, and `fnox exec` rather
    than shell backgrounding.
-4. Declare required secret *names* in `.config/fnox/local.toml`, for example:
+5. Declare required secret *names* in `.config/fnox/local.toml`, for example:
 
    ```toml
    [secrets]
    API_TOKEN = { provider = "environment", description = "Development API token" }
    ```
 
-5. If the repository needs databases or other stateful services, add a named
+6. If the repository needs databases or other stateful services, add a named
    Worktrunk extension. Do not put destructive create/drop steps in the base
    lifecycle.
-6. Run `mise run check:template`, `mise run setup`, and `mise run check`.
+7. Run `mise tasks validate`, `mise run setup`, and `mise run check`.
+
+Use `mise run --no-cache <task>` or `MISE_TASK_REMOTE_NO_CACHE=true` to fetch
+the remote task library without its local cache.
 
 ## Design rules
 
-- Mise owns every executable invoked by hooks and CI; reusable validation and
-  orchestration live in mise tasks, not helper scripts.
-- Each task declares the runtime it needs in local MISE metadata and imports
-  repository-owned modules. The starter does not mandate a task language.
+- Mise owns every executable invoked by hooks and CI; shared behavior comes
+  from remote native tasks and repository-specific behavior stays local.
+- Each shared task declares its runtime locally; application tasks choose their
+  own runtime and dependencies.
 - fnox configuration contains declarations only; values arrive through the
   environment in local development and CI.
 - Pitchfork, not ad hoc shell jobs, owns daemon lifetime and port allocation.
@@ -69,17 +67,5 @@ replaces `app:serve` with its own foreground process.
 - CI sends exact base and head SHAs to hk so changed-range checks cannot silently
   use a stale local branch.
 
-## Planned pilots
-
-Adopt in this sequence: Model Channel, Pylee, Symphony, AG2, then Arrusted.
-The first four validate lightweight app/service needs; Arrusted validates the
-multi-service, Worktrunk, and Turbo-monorepo stress case.
-
-See [the pilot migration map](docs/PILOTS.md) for the preserved configuration
-and required proof for each repository.
-
-## Optional configuration modules
-
-Use the copy-only bundles in [modules/](modules/README.md) when a repository
-needs a JavaScript hk profile, Turbo monorepo contract, service/worktree
-lifecycle, hardened quality workflow, or dependency-update policy.
+See [repository-tooling](https://github.com/jasonmorganson/repository-tooling)
+for the shared task source and its remote-task contract.

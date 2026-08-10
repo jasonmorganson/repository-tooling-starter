@@ -1,0 +1,8 @@
+[settings]
+experimental = true
+
+[task_config]
+includes = [
+  "git::https://github.com/jasonmorganson/repository-tooling.git//tasks?ref=main",
+  ".config/mise/tasks",
+]

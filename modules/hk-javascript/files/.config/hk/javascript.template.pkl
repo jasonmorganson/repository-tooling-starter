@@ -1,7 +1,0 @@
-local javascriptChecks = new Mapping<String, Step> {
-  ["format:javascript"] = new Step { glob = "__FORMAT_GLOB__"; check = "mise run __FORMAT_TASK__ -- {{ files }}"; fix = "mise run __FORMAT_FIX_TASK__ -- {{ files }}" }
-  ["lint:javascript"] = new Step { glob = "__SOURCE_GLOB__"; check = "mise run __LINT_TASK__ -- {{ files }}" }
-  ["typecheck:javascript"] = new Step { glob = "__TYPECHECK_GLOB__"; check = "mise run __TYPECHECK_TASK__" }
-  ["test:unit:javascript"] = new Step { glob = "__UNIT_GLOB__"; check = "mise run __UNIT_TEST_TASK__" }
-  ["test:integration:javascript"] = new Step { glob = "__INTEGRATION_GLOB__"; check = "mise run __INTEGRATION_TEST_TASK__" }
-}

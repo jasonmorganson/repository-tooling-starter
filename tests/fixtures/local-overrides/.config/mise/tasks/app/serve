@@ -1,0 +1,5 @@
+#!/usr/bin/env nu
+#MISE description="Local override fixture for app:serve"
+#MISE tools={"aqua:nushell/nushell"="latest"}
+
+print "local app serve override"

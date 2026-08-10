@@ -1,0 +1,47 @@
+#!/usr/bin/env nu
+#MISE description="Validate the minimal remote-task starter and locality fixtures"
+#MISE tools={"aqua:nushell/nushell"="latest"}
+
+def require-file [file: string] {
+  if not ($file | path exists) { error make { msg: $"Missing required starter file: ($file)" } }
+}
+
+for file in [mise.toml .config/mise/config.toml .config/fnox/local.toml .config/hk.pkl .config/pitchfork.toml .config/wt.toml turbo.json .github/workflows/ci.yml .config/mise/tasks/app/serve] {
+  require-file $file
+}
+
+let root_config = open --raw mise.toml
+if not ($root_config | str contains "git::https://github.com/jasonmorganson/repository-tooling.git//tasks?ref=main") { error make { msg: "Missing repository-tooling remote include" } }
+let remote_index = ($root_config | str index-of "git::https://github.com/jasonmorganson/repository-tooling.git//tasks?ref=main")
+let local_index = ($root_config | str index-of ".config/mise/tasks")
+if $remote_index > $local_index { error make { msg: "Local task directories must follow the remote include" } }
+
+let negative_include = open --raw "tests/fixtures/negative/include-ordering/mise.toml"
+let negative_remote = ($negative_include | str index-of "git::https://github.com/jasonmorganson/repository-tooling.git//tasks?ref=main")
+let negative_local = ($negative_include | str index-of ".config/mise/tasks")
+if $negative_remote < $negative_local { error make { msg: "Include-ordering negative fixture no longer demonstrates a remote override failure" } }
+if ("modules/README.md" | path exists) { error make { msg: "The starter must not contain a local module catalog" } }
+if (".config/mise/tasks/module/check" | path exists) { error make { msg: "The starter must not contain module tasks" } }
+
+for task in [build ci format lint setup start stop test turbo/run check/_default check/template] {
+  let local_task = $".config/mise/tasks/($task)"
+  if ($local_task | path exists) { error make { msg: $"Shared task ($task) must not be implemented locally" } }
+}
+
+let secret_values = (
+  glob ".config/fnox/*.toml"
+  | each {|file| open --raw $file | lines | where {|line| $line =~ '^\s*[A-Z][A-Z0-9_]*\s*=\s*"[^"]+"\s*$' } | where {|line| not ($line =~ 'provider\s*=|description\s*=') } }
+  | flatten
+)
+if not ($secret_values | is-empty) { error make { msg: "fnox config must declare secret sources, not values" } }
+
+let fixture = "tests/fixtures/local-overrides"
+^mise -C $fixture tasks validate
+let app = (^mise -C $fixture run --no-cache app:serve | complete)
+if ($app.exit_code != 0) or not ($app.stdout | str contains "local app serve override") { error make { msg: "Local app:serve did not override the remote task" } }
+let format = (^mise -C $fixture run --no-cache format | complete)
+if ($format.exit_code != 0) or not ($format.stdout | str contains "local format override") { error make { msg: "Local canonical task did not override the remote task" } }
+let remote = (^mise -C $fixture run --no-cache turbo:run check | complete)
+if ($remote.exit_code != 0) or not ($remote.stdout | str contains "Skipping turbo check") { error make { msg: "Remote task cache-bypass fixture failed" } }
+
+print "Remote-task starter contract is valid."
